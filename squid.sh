@@ -1,6 +1,6 @@
 #! /bin/sh
 #-----------------------------
-# squid	open source by Dexter.
+# squid	open source by Dxplusdev.
 #-----------------------------
 
 NAME=squid3
