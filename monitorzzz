@@ -1,12 +1,6 @@
 #!/bin/bash
 service=$1
-function ip_address(){
-  local IP="$( ip addr | egrep -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | egrep -v "^192\.168|^172\.1[6-9]\.|^172\.2[0-9]\.|^172\.3[0-2]\.|^10\.|^127\.|^255\.|^0\." | head -n 1 )"
-  [ -z "${IP}" ] && IP="$( curl -4 -s ipv4.icanhazip.com )"
-  [ -z "${IP}" ] && IP="$( curl -4 -s ipinfo.io/ip )"
-  [ ! -z "${IP}" ] && echo "${IP}" || echo
-} 
-ip=$(ip_address)
+ip=$(curl -s https://api.ipify.org)
 os="$(neofetch os)"; os="${os##*: }"
 distro="$(neofetch distro)"; distro="${distro##*: }"
 cpu="$(neofetch cpu --cpu_speed on --cpu_cores off)"; cpu="${cpu##*: }"
@@ -196,6 +190,17 @@ EOF
 )
 
 mysql -u $DB_USER -p$DB_PASS -D $DB_NAME -h $DB_HOST -e "UPDATE server_list SET cpu_model='$cpu', distro='$distro', memory='$memory', uptime='$uptime', disk='$disk', bandwidth='$bandwidth', os='$os', proto='$service', tcpssl='$tcp_ssl_port', udpssl='$udp_ssl_port', tcp_status='$ocserv', hysteria_status='$udphysteria', udp_status='$ocserv', ssl_status='$ssl', squid_status='$squid', socket_status='$socket', tcp='$tcp_port', udp='$udp_port', hysteria_port='$hysteria_port', squid='$squid_port', socket='$socket_port', online='$totalocserv', hysteria_online='$total_hysteria' WHERE server_ip='$ip' "
+
+elif [[ $service == "xray" ]];
+then
+xray=$(systemctl is-active xray.service)
+nginx=$(systemctl is-active nginx)
+squid=$(systemctl is-active squid)
+
+. /root/.ports
+. /etc/xray/.db-base
+
+mysql -u $DB_USER -p$DB_PASS -D $DB_NAME -h $DB_HOST -e "UPDATE server_list SET cpu_model='$cpu', distro='$distro', memory='$memory', uptime='$uptime', disk='$disk', bandwidth='$bandwidth', os='$os', proto='$service', xray_tls='$xray_tls', xray_ntls='$xray_ntls', xray_status='$xray', squid_status='$squid', squid='$squid_port', xray_vmess='$vmess', xray_vless='$vless', xray_trojan='$trojan', xray_ss='$ss' WHERE server_ip='$ip' "
 
 elif [[ $service == "openconnect" ]];
 then
