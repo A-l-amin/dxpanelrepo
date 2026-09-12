@@ -104,3 +104,5 @@ esac
 # @daily root /etc/ADMRufu/install/limitador.sh >> /var/spool/cron/crontabs/root
 
 # 0 1 * * * /etc/ADMRufu/install/limitador.sh >> /var/spool/cron/crontabs/root
+
+#Digitel
